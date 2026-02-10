@@ -6,6 +6,11 @@ from adaptivearm.estimation.collision_detector import (
     CollisionEvent,
     CollisionReaction,
 )
+from adaptivearm.estimation.composite_observer import (
+    CompositeObserver,
+    FusionStrategy,
+)
+from adaptivearm.estimation.ekf_observer import EKFObserver, EKFParams
 from adaptivearm.estimation.momentum_observer import MomentumObserver
 
 __all__ = [
@@ -13,5 +18,9 @@ __all__ = [
     "CollisionDetector",
     "CollisionEvent",
     "CollisionReaction",
+    "CompositeObserver",
+    "EKFObserver",
+    "EKFParams",
+    "FusionStrategy",
     "MomentumObserver",
 ]

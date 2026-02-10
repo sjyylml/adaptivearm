@@ -44,8 +44,14 @@ viz = [
 isaacgym = [
     "torch>=2.0",
 ]
+ur = [
+    "ur_rtde>=1.5",
+]
+pinocchio = [
+    "pin>=2.6",
+]
 all = [
-    "adaptivearm[dev,viz]",
+    "adaptivearm[dev,viz,pinocchio]",
 ]
 
 [project.urls]
@@ -74,7 +80,7 @@ packages = ["adaptivearm"]
 mypy_path = "src"
 
 [[tool.mypy.overrides]]
-module = ["mujoco.*", "isaacgym.*", "torch.*"]
+module = ["mujoco.*", "isaacgym.*", "torch.*", "pinocchio.*", "pin.*", "rtde_control.*", "rtde_receive.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

@@ -52,3 +52,35 @@ class DynamicsModel(Protocol):
     def gravity_vector(self, q: NDArray[np.floating]) -> NDArray[np.floating]:
         """Compute gravity torque vector g(q), shape (n,)."""
         ...
+
+
+class ExtendedDynamicsModel(Protocol):
+    """Extended dynamics protocol including passive torques and joint count.
+
+    MuJoCoDynamics already satisfies this protocol structurally.
+    """
+
+    @property
+    def n_joints(self) -> int:
+        """Number of degrees of freedom."""
+        ...
+
+    def mass_matrix(self, q: NDArray[np.floating]) -> NDArray[np.floating]:
+        """Compute joint-space inertia matrix M(q), shape (n, n)."""
+        ...
+
+    def coriolis_vector(
+        self, q: NDArray[np.floating], qd: NDArray[np.floating]
+    ) -> NDArray[np.floating]:
+        """Compute Coriolis/centrifugal vector C(q, qd)*qd, shape (n,)."""
+        ...
+
+    def gravity_vector(self, q: NDArray[np.floating]) -> NDArray[np.floating]:
+        """Compute gravity torque vector g(q), shape (n,)."""
+        ...
+
+    def passive_torque(
+        self, qd: NDArray[np.floating], q: NDArray[np.floating]
+    ) -> NDArray[np.floating]:
+        """Compute passive joint torques (damping, etc.), shape (n,)."""
+        ...
