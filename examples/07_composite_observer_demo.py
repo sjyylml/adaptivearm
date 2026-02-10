@@ -9,13 +9,13 @@ This demonstrates:
 
 import numpy as np
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.dynamics import MuJoCoDynamics
-from adaptivearm.estimation.composite_observer import (
+from openforce.adapters.sim import SimAdapter
+from openforce.dynamics import MuJoCoDynamics
+from openforce.estimation.composite_observer import (
     CompositeObserver,
     FusionStrategy,
 )
-from adaptivearm.estimation.momentum_observer import MomentumObserver
+from openforce.estimation.momentum_observer import MomentumObserver
 
 
 def main() -> None:
@@ -133,7 +133,7 @@ def main() -> None:
         plt.savefig("composite_observer.png", dpi=150)
         print("\nPlot saved to composite_observer.png")
     except ImportError:
-        print("\n(Install matplotlib for plotting: pip install adaptivearm[viz])")
+        print("\n(Install matplotlib for plotting: pip install openforce[viz])")
 
 
 if __name__ == "__main__":

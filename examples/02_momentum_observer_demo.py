@@ -10,10 +10,10 @@ This demonstrates:
 
 import numpy as np
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.dynamics import MuJoCoDynamics
-from adaptivearm.estimation import MomentumObserver
-from adaptivearm.sim.virtual_sensor import VirtualForceSensor
+from openforce.adapters.sim import SimAdapter
+from openforce.dynamics import MuJoCoDynamics
+from openforce.estimation import MomentumObserver
+from openforce.sim.virtual_sensor import VirtualForceSensor
 
 
 def main() -> None:
@@ -129,7 +129,7 @@ def main() -> None:
         plt.savefig("momentum_observer_demo.png", dpi=150)
         print("\nPlot saved to momentum_observer_demo.png")
     except ImportError:
-        print("\n(Install matplotlib for plotting: pip install adaptivearm[viz])")
+        print("\n(Install matplotlib for plotting: pip install openforce[viz])")
 
 
 if __name__ == "__main__":

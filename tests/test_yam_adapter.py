@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from adaptivearm.models import get_model, list_models
+from openforce.models import get_model, list_models
 
 
 class TestYAMModel:
@@ -39,7 +39,7 @@ class TestYAMModel:
         """MuJoCoDynamics should compute valid M, g for the YAM model."""
         import mujoco
 
-        from adaptivearm.dynamics import MuJoCoDynamics
+        from openforce.dynamics import MuJoCoDynamics
 
         info = get_model("yam")
         model = mujoco.MjModel.from_xml_path(str(info.model_path))
@@ -56,7 +56,7 @@ class TestYAMModel:
 
     def test_yam_jacobian(self) -> None:
         """Jacobian computation should work with the YAM model."""
-        from adaptivearm.sim.mujoco_env import MuJoCoArmEnv
+        from openforce.sim.mujoco_env import MuJoCoArmEnv
 
         info = get_model("yam")
         env = MuJoCoArmEnv(
@@ -74,7 +74,7 @@ class TestYAMConfig:
     def test_default_config(self) -> None:
         """Default YAMConfig should have sensible values."""
         i2rt = pytest.importorskip("i2rt")  # noqa: F841
-        from adaptivearm.adapters.yam import YAMConfig
+        from openforce.adapters.yam import YAMConfig
 
         config = YAMConfig()
         assert config.channel == "can0"
@@ -86,7 +86,7 @@ class TestYAMConfig:
     def test_custom_config(self) -> None:
         """Custom config values should be respected."""
         i2rt = pytest.importorskip("i2rt")  # noqa: F841
-        from adaptivearm.adapters.yam import YAMConfig
+        from openforce.adapters.yam import YAMConfig
 
         config = YAMConfig(channel="can1", dt=0.002, torque_scale=0.5)
         assert config.channel == "can1"
@@ -100,7 +100,7 @@ class TestYAMImportGuard:
 
         The __init__.py uses try/except so the module loads cleanly.
         """
-        import adaptivearm.adapters.yam as yam_mod
+        import openforce.adapters.yam as yam_mod
 
         # __all__ will be empty if i2rt is not installed,
         # or contain YAMAdapter/YAMConfig if it is.
@@ -114,8 +114,8 @@ class TestYAMObserverIntegration:
         """MomentumObserver should work with YAM model dynamics."""
         import mujoco
 
-        from adaptivearm.dynamics import MuJoCoDynamics
-        from adaptivearm.estimation import MomentumObserver
+        from openforce.dynamics import MuJoCoDynamics
+        from openforce.estimation import MomentumObserver
 
         info = get_model("yam")
         model = mujoco.MjModel.from_xml_path(str(info.model_path))
@@ -133,8 +133,8 @@ class TestYAMObserverIntegration:
         """EKFObserver should work with YAM model dynamics."""
         import mujoco
 
-        from adaptivearm.dynamics import MuJoCoDynamics
-        from adaptivearm.estimation import EKFObserver
+        from openforce.dynamics import MuJoCoDynamics
+        from openforce.estimation import EKFObserver
 
         info = get_model("yam")
         model = mujoco.MjModel.from_xml_path(str(info.model_path))

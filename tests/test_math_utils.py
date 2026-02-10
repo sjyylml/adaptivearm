@@ -3,7 +3,7 @@
 import numpy as np
 from numpy.testing import assert_allclose
 
-from adaptivearm.utils.math_utils import pseudoinverse, skew_symmetric, wrap_angle
+from openforce.utils.math_utils import pseudoinverse, skew_symmetric, wrap_angle
 
 
 class TestSkewSymmetric:

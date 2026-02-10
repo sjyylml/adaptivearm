@@ -7,9 +7,9 @@ import pytest
 
 torch = pytest.importorskip("torch", reason="torch not installed")
 
-from adaptivearm.core.robot_state import RobotState
-from adaptivearm.estimation.neural_base import ObserverMode
-from adaptivearm.estimation.transformer_observer import (
+from openforce.core.robot_state import RobotState
+from openforce.estimation.neural_base import ObserverMode
+from openforce.estimation.transformer_observer import (
     TransformerObserver,
     TransformerObserverParams,
 )

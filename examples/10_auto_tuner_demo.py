@@ -9,10 +9,10 @@ This demonstrates:
 
 import numpy as np
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.dynamics import MuJoCoDynamics
-from adaptivearm.estimation import MomentumObserver
-from adaptivearm.tuning.auto_tuner import AutoTuner, AutoTunerConfig
+from openforce.adapters.sim import SimAdapter
+from openforce.dynamics import MuJoCoDynamics
+from openforce.estimation import MomentumObserver
+from openforce.tuning.auto_tuner import AutoTuner, AutoTunerConfig
 
 
 def main() -> None:
@@ -87,7 +87,7 @@ def main() -> None:
         plt.savefig("auto_tuner_demo.png", dpi=150)
         print("\nPlot saved to auto_tuner_demo.png")
     except ImportError:
-        print("\n(Install matplotlib for plotting: pip install adaptivearm[viz])")
+        print("\n(Install matplotlib for plotting: pip install openforce[viz])")
 
 
 if __name__ == "__main__":

@@ -5,10 +5,10 @@ from __future__ import annotations
 import numpy as np
 from numpy.testing import assert_allclose
 
-from adaptivearm.core.robot_state import RobotState
-from adaptivearm.core.types import ObserverOutput
-from adaptivearm.estimation.base_observer import BaseObserver
-from adaptivearm.estimation.composite_observer import (
+from openforce.core.robot_state import RobotState
+from openforce.core.types import ObserverOutput
+from openforce.estimation.base_observer import BaseObserver
+from openforce.estimation.composite_observer import (
     CompositeObserver,
     FusionStrategy,
 )

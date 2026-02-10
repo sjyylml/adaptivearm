@@ -7,14 +7,14 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.models import (
+from openforce.adapters.sim import SimAdapter
+from openforce.models import (
     RobotModelInfo,
     get_model,
     list_models,
     register_model,
 )
-from adaptivearm.sim.mujoco_env import MuJoCoArmEnv
+from openforce.sim.mujoco_env import MuJoCoArmEnv
 
 
 class TestModelRegistry:
@@ -138,7 +138,7 @@ class TestSimAdapterModelName:
 
     def test_dynamics_work_with_model_name(self) -> None:
         """Dynamics computation should work with model loaded by name."""
-        from adaptivearm.dynamics import MuJoCoDynamics
+        from openforce.dynamics import MuJoCoDynamics
 
         adapter = SimAdapter(model_name="default_6dof")
         dynamics = MuJoCoDynamics(adapter.env.model)

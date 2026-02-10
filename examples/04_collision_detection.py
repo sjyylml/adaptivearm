@@ -9,11 +9,11 @@ Demonstrates:
 
 import numpy as np
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.control.safety_monitor import SafetyMonitor
-from adaptivearm.dynamics import MuJoCoDynamics
-from adaptivearm.estimation import CollisionDetector, MomentumObserver
-from adaptivearm.sim.virtual_sensor import VirtualForceSensor
+from openforce.adapters.sim import SimAdapter
+from openforce.control.safety_monitor import SafetyMonitor
+from openforce.dynamics import MuJoCoDynamics
+from openforce.estimation import CollisionDetector, MomentumObserver
+from openforce.sim.virtual_sensor import VirtualForceSensor
 
 
 def main() -> None:

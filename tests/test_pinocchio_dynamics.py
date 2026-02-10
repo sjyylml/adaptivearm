@@ -11,13 +11,13 @@ pin = pytest.importorskip("pinocchio", reason="pinocchio not installed")
 class TestPinocchioDynamics:
     def test_import_and_construct(self) -> None:
         """PinocchioDynamics should be importable when pinocchio is available."""
-        from adaptivearm.dynamics.pinocchio_dynamics import PinocchioDynamics
+        from openforce.dynamics.pinocchio_dynamics import PinocchioDynamics
 
         assert PinocchioDynamics is not None
 
     def test_mass_matrix_shape(self, tmp_path: pytest.TempPathFactory) -> None:
         """Mass matrix should have correct shape."""
-        from adaptivearm.dynamics.pinocchio_dynamics import PinocchioDynamics
+        from openforce.dynamics.pinocchio_dynamics import PinocchioDynamics
 
         # Create a minimal URDF for testing
         urdf = _minimal_urdf()
@@ -32,7 +32,7 @@ class TestPinocchioDynamics:
 
     def test_mass_matrix_symmetric(self, tmp_path: pytest.TempPathFactory) -> None:
         """Mass matrix should be symmetric."""
-        from adaptivearm.dynamics.pinocchio_dynamics import PinocchioDynamics
+        from openforce.dynamics.pinocchio_dynamics import PinocchioDynamics
 
         urdf_file = tmp_path / "test_robot.urdf"  # type: ignore[operator]
         urdf_file.write_text(_minimal_urdf())
@@ -44,7 +44,7 @@ class TestPinocchioDynamics:
 
     def test_gravity_vector_shape(self, tmp_path: pytest.TempPathFactory) -> None:
         """Gravity vector should have correct shape."""
-        from adaptivearm.dynamics.pinocchio_dynamics import PinocchioDynamics
+        from openforce.dynamics.pinocchio_dynamics import PinocchioDynamics
 
         urdf_file = tmp_path / "test_robot.urdf"  # type: ignore[operator]
         urdf_file.write_text(_minimal_urdf())
@@ -56,7 +56,7 @@ class TestPinocchioDynamics:
 
     def test_coriolis_zero_velocity(self, tmp_path: pytest.TempPathFactory) -> None:
         """Coriolis vector should be zero at zero velocity."""
-        from adaptivearm.dynamics.pinocchio_dynamics import PinocchioDynamics
+        from openforce.dynamics.pinocchio_dynamics import PinocchioDynamics
 
         urdf_file = tmp_path / "test_robot.urdf"  # type: ignore[operator]
         urdf_file.write_text(_minimal_urdf())
@@ -69,7 +69,7 @@ class TestPinocchioDynamics:
 
     def test_passive_torque(self, tmp_path: pytest.TempPathFactory) -> None:
         """Passive torque should be proportional to velocity."""
-        from adaptivearm.dynamics.pinocchio_dynamics import PinocchioDynamics
+        from openforce.dynamics.pinocchio_dynamics import PinocchioDynamics
 
         urdf_file = tmp_path / "test_robot.urdf"  # type: ignore[operator]
         urdf_file.write_text(_minimal_urdf())

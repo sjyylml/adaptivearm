@@ -4,7 +4,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## Project Overview
 
-**AdaptiveArm** is a Python framework for sensorless force sensing and adaptive control on collaborative robot arms. It enables force estimation, load compensation, and compliant control using only motor currents and joint encoders — no force/torque sensors required.
+**OpenForce** is a Python framework for sensorless force sensing and adaptive control on collaborative robot arms. It enables force estimation, load compensation, and compliant control using only motor currents and joint encoders — no force/torque sensors required.
 
 **Business model**: Open-source core (MIT) + paid services (AutoTuner, system identification, web monitoring).
 

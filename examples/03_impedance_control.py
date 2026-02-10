@@ -9,9 +9,9 @@ Demonstrates:
 
 import numpy as np
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.control.impedance import ImpedanceController, ImpedanceParams
-from adaptivearm.dynamics import MuJoCoDynamics
+from openforce.adapters.sim import SimAdapter
+from openforce.control.impedance import ImpedanceController, ImpedanceParams
+from openforce.dynamics import MuJoCoDynamics
 
 
 def main() -> None:

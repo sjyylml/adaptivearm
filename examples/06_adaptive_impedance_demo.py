@@ -9,14 +9,14 @@ This demonstrates:
 
 import numpy as np
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.control.adaptive_impedance import (
+from openforce.adapters.sim import SimAdapter
+from openforce.control.adaptive_impedance import (
     AdaptiveImpedanceController,
     AdaptiveImpedanceParams,
 )
-from adaptivearm.core.types import ObserverOutput
-from adaptivearm.dynamics import MuJoCoDynamics
-from adaptivearm.estimation.momentum_observer import MomentumObserver
+from openforce.core.types import ObserverOutput
+from openforce.dynamics import MuJoCoDynamics
+from openforce.estimation.momentum_observer import MomentumObserver
 
 
 def main() -> None:
@@ -132,7 +132,7 @@ def main() -> None:
         plt.savefig("adaptive_impedance.png", dpi=150)
         print("\nPlot saved to adaptive_impedance.png")
     except ImportError:
-        print("\n(Install matplotlib for plotting: pip install adaptivearm[viz])")
+        print("\n(Install matplotlib for plotting: pip install openforce[viz])")
 
 
 if __name__ == "__main__":

@@ -5,9 +5,9 @@ from __future__ import annotations
 import numpy as np
 from numpy.testing import assert_allclose
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.dynamics.mujoco_dynamics import MuJoCoDynamics
-from adaptivearm.estimation.ekf_observer import EKFObserver, EKFParams
+from openforce.adapters.sim import SimAdapter
+from openforce.dynamics.mujoco_dynamics import MuJoCoDynamics
+from openforce.estimation.ekf_observer import EKFObserver, EKFParams
 
 
 def _make_ekf_setup() -> tuple[SimAdapter, MuJoCoDynamics, EKFObserver]:

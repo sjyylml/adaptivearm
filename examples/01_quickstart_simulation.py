@@ -10,8 +10,8 @@ This demonstrates:
 
 import numpy as np
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.dynamics import MuJoCoDynamics
+from openforce.adapters.sim import SimAdapter
+from openforce.dynamics import MuJoCoDynamics
 
 
 def main() -> None:
@@ -68,7 +68,7 @@ def main() -> None:
         plt.savefig("gravity_compensation.png", dpi=150)
         print("Plot saved to gravity_compensation.png")
     except ImportError:
-        print("(Install matplotlib for plotting: pip install adaptivearm[viz])")
+        print("(Install matplotlib for plotting: pip install openforce[viz])")
 
 
 if __name__ == "__main__":

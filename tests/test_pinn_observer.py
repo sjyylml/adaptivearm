@@ -7,9 +7,9 @@ import pytest
 
 torch = pytest.importorskip("torch", reason="torch not installed")
 
-from adaptivearm.core.robot_state import RobotState
-from adaptivearm.estimation.neural_base import ObserverMode, TrainingData
-from adaptivearm.estimation.pinn_observer import PINNObserver, PINNParams
+from openforce.core.robot_state import RobotState
+from openforce.estimation.neural_base import ObserverMode, TrainingData
+from openforce.estimation.pinn_observer import PINNObserver, PINNParams
 
 
 @pytest.fixture

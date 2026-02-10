@@ -10,9 +10,9 @@ This demonstrates:
 
 import numpy as np
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.dynamics import MuJoCoDynamics
-from adaptivearm.models import RobotModelInfo, get_model, list_models, register_model
+from openforce.adapters.sim import SimAdapter
+from openforce.dynamics import MuJoCoDynamics
+from openforce.models import RobotModelInfo, get_model, list_models, register_model
 
 
 def main() -> None:
@@ -53,7 +53,7 @@ def main() -> None:
     print("To add your own robot, place the URDF/MJCF file and register it:")
     print()
     print("  from pathlib import Path")
-    print("  from adaptivearm.models import RobotModelInfo, register_model")
+    print("  from openforce.models import RobotModelInfo, register_model")
     print()
     print("  register_model(RobotModelInfo(")
     print('      name="ur5e",')

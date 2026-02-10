@@ -5,13 +5,13 @@ from __future__ import annotations
 import numpy as np
 from numpy.testing import assert_allclose
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.control.adaptive_impedance import (
+from openforce.adapters.sim import SimAdapter
+from openforce.control.adaptive_impedance import (
     AdaptiveImpedanceController,
     AdaptiveImpedanceParams,
 )
-from adaptivearm.core.types import ObserverOutput
-from adaptivearm.dynamics.mujoco_dynamics import MuJoCoDynamics
+from openforce.core.types import ObserverOutput
+from openforce.dynamics.mujoco_dynamics import MuJoCoDynamics
 
 
 class TestAdaptiveImpedanceController:

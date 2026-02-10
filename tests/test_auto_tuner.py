@@ -5,10 +5,10 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.dynamics.mujoco_dynamics import MuJoCoDynamics
-from adaptivearm.estimation.momentum_observer import MomentumObserver
-from adaptivearm.tuning.auto_tuner import AutoTuner, AutoTunerConfig, TuningResult
+from openforce.adapters.sim import SimAdapter
+from openforce.dynamics.mujoco_dynamics import MuJoCoDynamics
+from openforce.estimation.momentum_observer import MomentumObserver
+from openforce.tuning.auto_tuner import AutoTuner, AutoTunerConfig, TuningResult
 
 
 @pytest.fixture

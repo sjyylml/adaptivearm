@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from adaptivearm.core.types import ObserverOutput
-from adaptivearm.estimation.collision_detector import CollisionDetector, CollisionReaction
+from openforce.core.types import ObserverOutput
+from openforce.estimation.collision_detector import CollisionDetector, CollisionReaction
 
 
 class TestCollisionDetector:

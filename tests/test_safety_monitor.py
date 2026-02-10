@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import numpy as np
 
-from adaptivearm.control.safety_monitor import SafetyLimits, SafetyMonitor, SafetyState
-from adaptivearm.core.types import ObserverOutput
-from adaptivearm.estimation.collision_detector import CollisionDetector
+from openforce.control.safety_monitor import SafetyLimits, SafetyMonitor, SafetyState
+from openforce.core.types import ObserverOutput
+from openforce.estimation.collision_detector import CollisionDetector
 
 
 class TestSafetyMonitor:

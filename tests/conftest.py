@@ -1,13 +1,13 @@
-"""Shared test fixtures for AdaptiveArm."""
+"""Shared test fixtures for OpenForce."""
 
 from __future__ import annotations
 
 import numpy as np
 import pytest
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.dynamics.mujoco_dynamics import MuJoCoDynamics
-from adaptivearm.sim.mujoco_env import MuJoCoArmEnv
+from openforce.adapters.sim import SimAdapter
+from openforce.dynamics.mujoco_dynamics import MuJoCoDynamics
+from openforce.sim.mujoco_env import MuJoCoArmEnv
 
 
 @pytest.fixture

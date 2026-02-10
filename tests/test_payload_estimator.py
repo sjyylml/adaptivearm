@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from adaptivearm.identification.payload_estimator import PayloadEstimator
+from openforce.identification.payload_estimator import PayloadEstimator
 
 
 class TestPayloadEstimator:

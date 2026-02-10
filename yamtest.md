@@ -38,13 +38,13 @@ sudo ip link set can0 up type can bitrate 1000000
 conda activate gmr
 
 # 确认关键包版本
-python -c "import adaptivearm; print('adaptivearm ok')"
+python -c "import openforce; print('openforce ok')"
 python -c "import i2rt; print('i2rt ok')"
 python -c "import mujoco; print('mujoco', mujoco.__version__)"
 python -c "import torch; print('torch', torch.__version__)"
 ```
 
-如果 `adaptivearm` 或 `i2rt` 导入失败：
+如果 `openforce` 或 `i2rt` 导入失败：
 
 ```bash
 cd /home/limenglian/data/claudetest && pip install -e ".[dev]"
@@ -132,7 +132,7 @@ python examples/12_yam_hardware_test.py --channel can0 --skip-to 3
 
 ```python
 import numpy as np
-from adaptivearm.adapters.yam import YAMAdapter, YAMConfig
+from openforce.adapters.yam import YAMAdapter, YAMConfig
 
 config = YAMConfig(channel="can0", zero_gravity_mode=True)
 
@@ -150,10 +150,10 @@ with YAMAdapter(config) as yam:
 import time
 import numpy as np
 import mujoco
-from adaptivearm.adapters.yam import YAMAdapter, YAMConfig
-from adaptivearm.dynamics import MuJoCoDynamics
-from adaptivearm.estimation import MomentumObserver
-from adaptivearm.models import get_model
+from openforce.adapters.yam import YAMAdapter, YAMConfig
+from openforce.dynamics import MuJoCoDynamics
+from openforce.estimation import MomentumObserver
+from openforce.models import get_model
 
 info = get_model("yam")
 model = mujoco.MjModel.from_xml_path(str(info.model_path))
@@ -187,11 +187,11 @@ with YAMAdapter(config) as yam:
 import time
 import numpy as np
 import mujoco
-from adaptivearm.adapters.yam import YAMAdapter, YAMConfig
-from adaptivearm.dynamics import MuJoCoDynamics
-from adaptivearm.estimation import MomentumObserver
-from adaptivearm.estimation.collision_detector import CollisionDetector
-from adaptivearm.models import get_model
+from openforce.adapters.yam import YAMAdapter, YAMConfig
+from openforce.dynamics import MuJoCoDynamics
+from openforce.estimation import MomentumObserver
+from openforce.estimation.collision_detector import CollisionDetector
+from openforce.models import get_model
 
 info = get_model("yam")
 model = mujoco.MjModel.from_xml_path(str(info.model_path))

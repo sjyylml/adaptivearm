@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from adaptivearm.core.robot_state import RobotState
+from openforce.core.robot_state import RobotState
 
 
 class TestRobotState:

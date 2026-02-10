@@ -5,9 +5,9 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from adaptivearm.core.robot_state import RobotState
-from adaptivearm.core.types import ControlOutput, ObserverOutput
-from adaptivearm.monitoring.web_monitor import (
+from openforce.core.robot_state import RobotState
+from openforce.core.types import ControlOutput, ObserverOutput
+from openforce.monitoring.web_monitor import (
     MonitorSnapshot,
     WebMonitor,
     WebMonitorConfig,

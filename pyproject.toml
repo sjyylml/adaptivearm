@@ -3,14 +3,14 @@ requires = ["setuptools>=68.0", "setuptools-scm>=8.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "adaptivearm"
+name = "openforce"
 version = "0.1.0"
 description = "Sensorless force sensing and adaptive control framework for collaborative robot arms"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.10"
 authors = [
-    {name = "AdaptiveArm Contributors"},
+    {name = "OpenForce Contributors"},
 ]
 keywords = ["robotics", "force-estimation", "impedance-control", "mujoco", "isaac-gym", "collaborative-robot"]
 classifiers = [
@@ -57,14 +57,14 @@ web = [
     "flask>=3.0",
 ]
 all = [
-    "adaptivearm[dev,viz,pinocchio,nn]",
+    "openforce[dev,viz,pinocchio,nn]",
 ]
 
 [project.urls]
-Homepage = "https://github.com/sjyylml/adaptivearm"
-Documentation = "https://github.com/sjyylml/adaptivearm#readme"
-Repository = "https://github.com/sjyylml/adaptivearm"
-Issues = "https://github.com/sjyylml/adaptivearm/issues"
+Homepage = "https://github.com/sjyylml/openforce"
+Documentation = "https://github.com/sjyylml/openforce#readme"
+Repository = "https://github.com/sjyylml/openforce"
+Issues = "https://github.com/sjyylml/openforce/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -82,7 +82,7 @@ python_version = "3.10"
 warn_return_any = false
 warn_unused_configs = true
 disallow_untyped_defs = true
-packages = ["adaptivearm"]
+packages = ["openforce"]
 mypy_path = "src"
 
 [[tool.mypy.overrides]]

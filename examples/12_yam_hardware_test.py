@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """YAM hardware test: step-by-step validation for real robot.
 
-Run this script to verify that the AdaptiveArm framework works correctly
+Run this script to verify that the OpenForce framework works correctly
 with the i2rt YAM arm.  It proceeds through several stages, pausing
 between each so you can observe the arm's behavior.
 
 Prerequisites:
     1. CAN interface is up:  sudo ip link set can0 up type can bitrate 1000000
     2. i2rt SDK installed:   pip install -e /path/to/i2rt
-    3. adaptivearm installed: pip install -e ".[dev]"
+    3. openforce installed: pip install -e ".[dev]"
     4. Motor timeout disabled (optional but recommended for testing):
        python -m i2rt.motor_config_tool.set_timeout --channel can0
 
@@ -46,7 +46,7 @@ def stage1_connection(channel: str) -> None:
     """Test basic connection and state reading."""
     print_header(1, "Connection & State Reading")
 
-    from adaptivearm.adapters.yam import YAMAdapter, YAMConfig
+    from openforce.adapters.yam import YAMAdapter, YAMConfig
 
     config = YAMConfig(channel=channel, zero_gravity_mode=True)
     print(f"Connecting to YAM on {channel} ...")
@@ -81,8 +81,8 @@ def stage2_model_registry() -> None:
     """Verify YAM model is registered and loadable."""
     print_header(2, "Model Registry & MuJoCo Dynamics")
 
-    from adaptivearm.dynamics import MuJoCoDynamics
-    from adaptivearm.models import get_model, list_models
+    from openforce.dynamics import MuJoCoDynamics
+    from openforce.models import get_model, list_models
 
     print(f"  Registered models: {list_models()}")
 
@@ -120,9 +120,9 @@ def stage3_gravity_comp_live(channel: str) -> None:
 
     import mujoco
 
-    from adaptivearm.adapters.yam import YAMAdapter, YAMConfig
-    from adaptivearm.dynamics import MuJoCoDynamics
-    from adaptivearm.models import get_model
+    from openforce.adapters.yam import YAMAdapter, YAMConfig
+    from openforce.dynamics import MuJoCoDynamics
+    from openforce.models import get_model
 
     info = get_model("yam")
     model = mujoco.MjModel.from_xml_path(str(info.model_path))
@@ -156,10 +156,10 @@ def stage4_momentum_observer(channel: str) -> None:
 
     import mujoco
 
-    from adaptivearm.adapters.yam import YAMAdapter, YAMConfig
-    from adaptivearm.dynamics import MuJoCoDynamics
-    from adaptivearm.estimation import MomentumObserver
-    from adaptivearm.models import get_model
+    from openforce.adapters.yam import YAMAdapter, YAMConfig
+    from openforce.dynamics import MuJoCoDynamics
+    from openforce.estimation import MomentumObserver
+    from openforce.models import get_model
 
     info = get_model("yam")
     model = mujoco.MjModel.from_xml_path(str(info.model_path))
@@ -216,10 +216,10 @@ def stage5_ekf_observer(channel: str) -> None:
 
     import mujoco
 
-    from adaptivearm.adapters.yam import YAMAdapter, YAMConfig
-    from adaptivearm.dynamics import MuJoCoDynamics
-    from adaptivearm.estimation import EKFObserver
-    from adaptivearm.models import get_model
+    from openforce.adapters.yam import YAMAdapter, YAMConfig
+    from openforce.dynamics import MuJoCoDynamics
+    from openforce.estimation import EKFObserver
+    from openforce.models import get_model
 
     info = get_model("yam")
     model = mujoco.MjModel.from_xml_path(str(info.model_path))
@@ -272,11 +272,11 @@ def stage6_collision_detection(channel: str) -> None:
 
     import mujoco
 
-    from adaptivearm.adapters.yam import YAMAdapter, YAMConfig
-    from adaptivearm.dynamics import MuJoCoDynamics
-    from adaptivearm.estimation import MomentumObserver
-    from adaptivearm.estimation.collision_detector import CollisionDetector
-    from adaptivearm.models import get_model
+    from openforce.adapters.yam import YAMAdapter, YAMConfig
+    from openforce.dynamics import MuJoCoDynamics
+    from openforce.estimation import MomentumObserver
+    from openforce.estimation.collision_detector import CollisionDetector
+    from openforce.models import get_model
 
     info = get_model("yam")
     model = mujoco.MjModel.from_xml_path(str(info.model_path))
@@ -337,7 +337,7 @@ def main() -> None:
     signal.signal(signal.SIGINT, lambda *_: sys.exit(0))
 
     print("=" * 60)
-    print("  AdaptiveArm — YAM Hardware Test Suite")
+    print("  OpenForce — YAM Hardware Test Suite")
     print("=" * 60)
     print(f"\n  CAN channel: {args.channel}")
     print(f"  Starting from stage: {args.skip_to}")

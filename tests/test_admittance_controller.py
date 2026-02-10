@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import numpy as np
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.control.admittance import AdmittanceController
-from adaptivearm.core.types import ObserverOutput
-from adaptivearm.dynamics.mujoco_dynamics import MuJoCoDynamics
+from openforce.adapters.sim import SimAdapter
+from openforce.control.admittance import AdmittanceController
+from openforce.core.types import ObserverOutput
+from openforce.dynamics.mujoco_dynamics import MuJoCoDynamics
 
 
 class TestAdmittanceController:
@@ -18,7 +18,7 @@ class TestAdmittanceController:
         n = adapter.n_joints
 
         q0 = np.array([0.0, 0.5, -0.3, 0.0, 0.2, 0.0])
-        from adaptivearm.control.admittance import AdmittanceParams
+        from openforce.control.admittance import AdmittanceParams
 
         ctrl = AdmittanceController(
             dynamics=dynamics,

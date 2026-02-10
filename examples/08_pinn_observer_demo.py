@@ -9,10 +9,10 @@ This demonstrates:
 
 import numpy as np
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.dynamics import MuJoCoDynamics
-from adaptivearm.estimation.pinn_observer import PINNObserver, PINNParams
-from adaptivearm.sim.virtual_sensor import VirtualForceSensor
+from openforce.adapters.sim import SimAdapter
+from openforce.dynamics import MuJoCoDynamics
+from openforce.estimation.pinn_observer import PINNObserver, PINNParams
+from openforce.sim.virtual_sensor import VirtualForceSensor
 
 
 def main() -> None:
@@ -134,7 +134,7 @@ def main() -> None:
         plt.savefig("pinn_observer_demo.png", dpi=150)
         print("\nPlot saved to pinn_observer_demo.png")
     except ImportError:
-        print("\n(Install matplotlib for plotting: pip install adaptivearm[viz])")
+        print("\n(Install matplotlib for plotting: pip install openforce[viz])")
 
 
 if __name__ == "__main__":

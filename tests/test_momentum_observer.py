@@ -5,10 +5,10 @@ from __future__ import annotations
 import numpy as np
 from numpy.testing import assert_allclose
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.dynamics.mujoco_dynamics import MuJoCoDynamics
-from adaptivearm.estimation.momentum_observer import MomentumObserver
-from adaptivearm.sim.virtual_sensor import VirtualForceSensor
+from openforce.adapters.sim import SimAdapter
+from openforce.dynamics.mujoco_dynamics import MuJoCoDynamics
+from openforce.estimation.momentum_observer import MomentumObserver
+from openforce.sim.virtual_sensor import VirtualForceSensor
 
 
 def _make_observer_setup(

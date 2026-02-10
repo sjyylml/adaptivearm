@@ -5,9 +5,9 @@ from __future__ import annotations
 import numpy as np
 from numpy.testing import assert_allclose
 
-from adaptivearm.adapters.sim import SimAdapter
-from adaptivearm.control.impedance import ImpedanceController, ImpedanceParams
-from adaptivearm.dynamics.mujoco_dynamics import MuJoCoDynamics
+from openforce.adapters.sim import SimAdapter
+from openforce.control.impedance import ImpedanceController, ImpedanceParams
+from openforce.dynamics.mujoco_dynamics import MuJoCoDynamics
 
 
 class TestImpedanceController:
