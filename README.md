@@ -56,6 +56,7 @@ DynamicsModel (Protocol)
 | 模块 | 职责 | 关键类 |
 |------|------|--------|
 | `core/` | 协议定义、数据类型、配置 | `RobotInterface`, `DynamicsModel`, `RobotState`, `ObserverOutput` |
+| `models/` | 机器人模型注册与管理 | `RobotModelInfo`, `get_model()`, `register_model()` |
 | `dynamics/` | 刚体动力学计算 | `MuJoCoDynamics`, `CoulombViscousFriction` |
 | `estimation/` | 力/力矩观测器 | `MomentumObserver` (GMO), `EKFObserver`, `PINNObserver`, `TransformerObserver`, `CompositeObserver` |
 | `sim/` | 仿真环境封装 | `MuJoCoArmEnv`, `IsaacGymArmEnv`, `VirtualForceSensor` |
@@ -220,6 +221,9 @@ python examples/09_transformer_observer_demo.py
 
 # 自动增益优化 demo
 python examples/10_auto_tuner_demo.py
+
+# 自定义模型加载 demo
+python examples/11_custom_model_demo.py
 ```
 
 ## 项目结构
@@ -231,6 +235,11 @@ src/adaptivearm/
 │   ├── robot_state.py #   RobotState 数据容器
 │   ├── types.py       #   ObserverOutput, ControlOutput
 │   └── config.py      #   AdaptiveArmConfig
+├── models/            # 机器人模型文件 + 注册表
+│   ├── __init__.py          # RobotModelInfo + register/get/list
+│   ├── default_6dof/        # 内置 6-DOF 臂 (MJCF)
+│   ├── ur5e/                # UR5e 占位（用户添加 URDF）
+│   └── panda/               # Panda 占位（用户添加 URDF）
 ├── dynamics/          # 动力学计算
 │   ├── mujoco_dynamics.py   # MuJoCo 后端: M(q), C(q,q̇), g(q)
 │   └── friction_models.py   # Coulomb + 粘性摩擦模型

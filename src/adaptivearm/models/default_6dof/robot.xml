@@ -1,0 +1,63 @@
+<mujoco model="6dof_arm">
+  <option gravity="0 0 -9.81" timestep="0.002">
+    <flag contact="enable"/>
+  </option>
+
+  <default>
+    <joint damping="0.5" armature="0.1"/>
+    <geom contype="1" conaffinity="1" condim="3" rgba="0.8 0.6 0.2 1" margin="0.001"/>
+  </default>
+
+  <worldbody>
+    <light diffuse=".5 .5 .5" pos="0 0 3" dir="0 0 -1"/>
+    <geom type="plane" size="2 2 0.01" rgba="0.9 0.9 0.9 1" contype="1" conaffinity="1"/>
+
+    <body name="link0" pos="0 0 0.1">
+      <geom type="cylinder" size="0.06 0.05" rgba="0.3 0.3 0.3 1"/>
+      <joint name="joint0" type="hinge" axis="0 0 1" range="-3.14 3.14"/>
+
+      <body name="link1" pos="0 0 0.1">
+        <geom type="capsule" size="0.04" fromto="0 0 0 0 0 0.4" rgba="0.8 0.2 0.2 1"/>
+        <joint name="joint1" type="hinge" axis="0 1 0" range="-2.0 2.0"/>
+
+        <body name="link2" pos="0 0 0.4">
+          <geom type="capsule" size="0.035" fromto="0 0 0 0 0 0.35" rgba="0.2 0.8 0.2 1"/>
+          <joint name="joint2" type="hinge" axis="0 1 0" range="-2.5 2.5"/>
+
+          <body name="link3" pos="0 0 0.35">
+            <geom type="capsule" size="0.03" fromto="0 0 0 0 0 0.2" rgba="0.2 0.2 0.8 1"/>
+            <joint name="joint3" type="hinge" axis="0 0 1" range="-3.14 3.14"/>
+
+            <body name="link4" pos="0 0 0.2">
+              <geom type="capsule" size="0.025" fromto="0 0 0 0 0 0.15" rgba="0.8 0.8 0.2 1"/>
+              <joint name="joint4" type="hinge" axis="0 1 0" range="-2.0 2.0"/>
+
+              <body name="link5" pos="0 0 0.15">
+                <geom type="capsule" size="0.02" fromto="0 0 0 0 0 0.1" rgba="0.8 0.2 0.8 1"/>
+                <joint name="joint5" type="hinge" axis="0 0 1" range="-3.14 3.14"/>
+
+                <body name="ee" pos="0 0 0.1">
+                  <site name="ee_site" pos="0 0 0" size="0.02" rgba="1 0 0 1"/>
+                  <geom type="sphere" size="0.03" rgba="1 0.5 0 1"/>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <motor name="motor0" joint="joint0" ctrlrange="-100 100" ctrllimited="true"/>
+    <motor name="motor1" joint="joint1" ctrlrange="-100 100" ctrllimited="true"/>
+    <motor name="motor2" joint="joint2" ctrlrange="-100 100" ctrllimited="true"/>
+    <motor name="motor3" joint="joint3" ctrlrange="-50 50" ctrllimited="true"/>
+    <motor name="motor4" joint="joint4" ctrlrange="-50 50" ctrllimited="true"/>
+    <motor name="motor5" joint="joint5" ctrlrange="-50 50" ctrllimited="true"/>
+  </actuator>
+
+  <sensor>
+    <framepos name="ee_pos" objtype="site" objname="ee_site"/>
+  </sensor>
+</mujoco>

@@ -80,14 +80,17 @@ class MuJoCoArmEnv:
     """MuJoCo simulation environment wrapping a robot arm model.
 
     Args:
-        xml_path: Path to MJCF XML file. If None, uses built-in 6-DOF arm.
+        xml_path: Path to MJCF XML or URDF file. If None, uses built-in 6-DOF arm.
         dt: Override model timestep (None = use model default).
+        ee_site_name: Name of the end-effector site in the model.
+            Used by ``get_ee_position`` and ``get_jacobian``.
     """
 
     def __init__(
         self,
         xml_path: str | Path | None = None,
         dt: float | None = None,
+        ee_site_name: str = "ee_site",
     ) -> None:
         if xml_path is not None:
             self._model = mujoco.MjModel.from_xml_path(str(xml_path))
@@ -98,6 +101,7 @@ class MuJoCoArmEnv:
             self._model.opt.timestep = dt
 
         self._data = mujoco.MjData(self._model)
+        self._ee_site_name = ee_site_name
         mujoco.mj_forward(self._model, self._data)
 
     @property
@@ -137,9 +141,16 @@ class MuJoCoArmEnv:
             self._data.ctrl[:] = tau
         mujoco.mj_step(self._model, self._data)
 
+    @property
+    def ee_site_name(self) -> str:
+        """Name of the end-effector site."""
+        return self._ee_site_name
+
     def get_ee_position(self) -> NDArray[np.floating]:
         """Get end-effector Cartesian position."""
-        site_id = mujoco.mj_name2id(self._model, mujoco.mjtObj.mjOBJ_SITE, "ee_site")
+        site_id = mujoco.mj_name2id(
+            self._model, mujoco.mjtObj.mjOBJ_SITE, self._ee_site_name
+        )
         return self._data.site_xpos[site_id].copy()
 
     def get_jacobian(self) -> NDArray[np.floating]:
@@ -149,7 +160,9 @@ class MuJoCoArmEnv:
             Jacobian matrix, shape (6, nv). Top 3 rows = translational,
             bottom 3 rows = rotational.
         """
-        site_id = mujoco.mj_name2id(self._model, mujoco.mjtObj.mjOBJ_SITE, "ee_site")
+        site_id = mujoco.mj_name2id(
+            self._model, mujoco.mjtObj.mjOBJ_SITE, self._ee_site_name
+        )
         nv = self._model.nv
         jacp = np.zeros((3, nv))
         jacr = np.zeros((3, nv))

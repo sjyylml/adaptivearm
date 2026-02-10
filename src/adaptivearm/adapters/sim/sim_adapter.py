@@ -16,17 +16,38 @@ class SimAdapter:
 
     Implements the RobotInterface protocol using a MuJoCo environment.
 
+    Can be initialized in three ways:
+
+    1. ``SimAdapter()`` — uses the built-in 6-DOF arm model.
+    2. ``SimAdapter(xml_path="path/to/model.xml")`` — loads from a file.
+    3. ``SimAdapter(model_name="ur5e")`` — looks up a registered model
+       from ``adaptivearm.models``.
+
     Args:
-        xml_path: Path to MJCF model. None = built-in 6-DOF arm.
+        xml_path: Path to MJCF/URDF model file. None = use default or registry.
         dt: Override simulation timestep.
+        model_name: Name of a registered model to load. When provided,
+            the model path and ee_site_name are resolved from the registry.
     """
 
     def __init__(
         self,
         xml_path: str | Path | None = None,
         dt: float | None = None,
+        model_name: str | None = None,
     ) -> None:
-        self._env = MuJoCoArmEnv(xml_path=xml_path, dt=dt)
+        ee_site_name = "ee_site"
+
+        if model_name is not None:
+            from adaptivearm.models import get_model
+
+            info = get_model(model_name)
+            xml_path = info.model_path
+            ee_site_name = info.ee_site_name
+
+        self._env = MuJoCoArmEnv(
+            xml_path=xml_path, dt=dt, ee_site_name=ee_site_name
+        )
 
     @property
     def env(self) -> MuJoCoArmEnv:
