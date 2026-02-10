@@ -14,16 +14,36 @@ Thumbs.db
 .env.local
 .env.*.local
 
-# Dependencies
-node_modules/
-venv/
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.python-version
+venv/
+.venv/
 
-# Build output
+# Build / Distribution
 dist/
 build/
 *.egg-info/
+*.egg
+.eggs/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# MuJoCo / Simulation
+*.mjlog
+*.png
+*.mp4
 
 # Logs
 *.log

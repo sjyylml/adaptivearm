@@ -1,0 +1,82 @@
+[build-system]
+requires = ["setuptools>=68.0", "setuptools-scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adaptivearm"
+version = "0.1.0"
+description = "Sensorless force sensing and adaptive control framework for collaborative robot arms"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "AdaptiveArm Contributors"},
+]
+keywords = ["robotics", "force-estimation", "impedance-control", "mujoco", "isaac-gym", "collaborative-robot"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "mujoco>=3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.4",
+    "mypy>=1.8",
+]
+viz = [
+    "matplotlib>=3.7",
+]
+isaacgym = [
+    "torch>=2.0",
+]
+all = [
+    "adaptivearm[dev,viz]",
+]
+
+[project.urls]
+Homepage = "https://github.com/adaptivearm/adaptivearm"
+Documentation = "https://adaptivearm.readthedocs.io"
+Repository = "https://github.com/adaptivearm/adaptivearm"
+Issues = "https://github.com/adaptivearm/adaptivearm/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = false
+warn_unused_configs = true
+disallow_untyped_defs = true
+packages = ["adaptivearm"]
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = ["mujoco.*", "isaacgym.*", "torch.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
