@@ -49,10 +49,10 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/adaptivearm/adaptivearm"
-Documentation = "https://adaptivearm.readthedocs.io"
-Repository = "https://github.com/adaptivearm/adaptivearm"
-Issues = "https://github.com/adaptivearm/adaptivearm/issues"
+Homepage = "https://github.com/sjyylml/adaptivearm"
+Documentation = "https://github.com/sjyylml/adaptivearm#readme"
+Repository = "https://github.com/sjyylml/adaptivearm"
+Issues = "https://github.com/sjyylml/adaptivearm/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
