@@ -50,8 +50,14 @@ ur = [
 pinocchio = [
     "pin>=2.6",
 ]
+nn = [
+    "torch>=2.0",
+]
+web = [
+    "flask>=3.0",
+]
 all = [
-    "adaptivearm[dev,viz,pinocchio]",
+    "adaptivearm[dev,viz,pinocchio,nn]",
 ]
 
 [project.urls]
@@ -80,7 +86,7 @@ packages = ["adaptivearm"]
 mypy_path = "src"
 
 [[tool.mypy.overrides]]
-module = ["mujoco.*", "isaacgym.*", "torch.*", "pinocchio.*", "pin.*", "rtde_control.*", "rtde_receive.*"]
+module = ["mujoco.*", "isaacgym.*", "torch.*", "pinocchio.*", "pin.*", "rtde_control.*", "rtde_receive.*", "flask.*", "scipy.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

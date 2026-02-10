@@ -57,11 +57,13 @@ DynamicsModel (Protocol)
 |------|------|--------|
 | `core/` | 协议定义、数据类型、配置 | `RobotInterface`, `DynamicsModel`, `RobotState`, `ObserverOutput` |
 | `dynamics/` | 刚体动力学计算 | `MuJoCoDynamics`, `CoulombViscousFriction` |
-| `estimation/` | 力/力矩观测器 | `MomentumObserver` (GMO) |
+| `estimation/` | 力/力矩观测器 | `MomentumObserver` (GMO), `EKFObserver`, `PINNObserver`, `TransformerObserver`, `CompositeObserver` |
 | `sim/` | 仿真环境封装 | `MuJoCoArmEnv`, `IsaacGymArmEnv`, `VirtualForceSensor` |
 | `adapters/` | RobotInterface 的具体实现 | `SimAdapter`, `IsaacGymAdapter` |
 | `control/` | 柔顺控制器（Phase 2+） | 阻抗控制、导纳控制 |
 | `identification/` | 参数辨识（Phase 2+） | 负载估计、摩擦辨识 |
+| `tuning/` | 自动参数调优 | `AutoTuner` |
+| `monitoring/` | Web 实时监控 | `WebMonitor` |
 | `utils/` | 数学工具、信号处理 | `LowPassFilter`, `pseudoinverse` |
 
 ## 核心算法：广义动量观测器（GMO）
@@ -113,11 +115,19 @@ pip install -e ".[all]"
 
 # Isaac Gym 支持（需要先安装 Isaac Gym）
 pip install -e ".[isaacgym]"
+
+# 神经网络观测器（PINN/Transformer，需要 PyTorch）
+pip install -e ".[nn]"
+
+# Web 监控面板（可选 Flask 依赖）
+pip install -e ".[web]"
 ```
 
 **依赖**: Python 3.10+, NumPy, SciPy, MuJoCo 3.0+
 
 **Isaac Gym**: 需要单独安装 [Isaac Gym Preview](https://developer.nvidia.com/isaac-gym)，并确保 GPU 驱动可用。
+
+**PyTorch**: PINN 和 Transformer 观测器需要 PyTorch 2.0+。Web 监控的核心功能仅使用标准库（http.server）。
 
 ## 快速上手
 
@@ -201,6 +211,15 @@ python examples/01_quickstart_simulation.py
 
 # GMO 力估计 demo（估计值 vs 真实值对比）
 python examples/02_momentum_observer_demo.py
+
+# PINN 力观测器训练 + 推理 demo
+python examples/08_pinn_observer_demo.py
+
+# Transformer 力观测器训练 + 推理 demo
+python examples/09_transformer_observer_demo.py
+
+# 自动增益优化 demo
+python examples/10_auto_tuner_demo.py
 ```
 
 ## 项目结构
@@ -216,8 +235,14 @@ src/adaptivearm/
 │   ├── mujoco_dynamics.py   # MuJoCo 后端: M(q), C(q,q̇), g(q)
 │   └── friction_models.py   # Coulomb + 粘性摩擦模型
 ├── estimation/        # 力估计算法
-│   ├── base_observer.py     # 观测器抽象基类
-│   └── momentum_observer.py # GMO 广义动量观测器
+│   ├── base_observer.py          # 观测器抽象基类
+│   ├── momentum_observer.py      # GMO 广义动量观测器
+│   ├── ekf_observer.py           # EKF 扩展卡尔曼滤波观测器
+│   ├── collision_detector.py     # 碰撞检测器
+│   ├── composite_observer.py     # 多观测器融合
+│   ├── neural_base.py            # 神经网络观测器基类
+│   ├── pinn_observer.py          # PINN 物理信息神经网络观测器
+│   └── transformer_observer.py   # Transformer 序列观测器
 ├── sim/               # 仿真环境
 │   ├── mujoco_env.py        # MuJoCo 环境（含内置 6-DOF 臂）
 │   ├── isaacgym_env.py      # Isaac Gym GPU 并行环境
@@ -225,8 +250,18 @@ src/adaptivearm/
 ├── adapters/          # RobotInterface 实现
 │   ├── sim/           #   MuJoCo SimAdapter
 │   └── isaacgym/      #   Isaac Gym IsaacGymAdapter
-├── control/           # 柔顺控制（Phase 2+）
-├── identification/    # 参数辨识（Phase 2+）
+├── control/           # 柔顺控制器
+│   ├── impedance.py          # 阻抗控制器
+│   ├── admittance.py         # 导纳控制器
+│   ├── adaptive_impedance.py # 自适应阻抗控制器
+│   └── safety_monitor.py     # 安全监控
+├── identification/    # 参数辨识
+│   ├── payload_estimator.py  # 负载估计
+│   └── friction_identifier.py # 摩擦辨识
+├── tuning/            # 自动调优
+│   └── auto_tuner.py         # 自动增益优化
+├── monitoring/        # Web 监控
+│   └── web_monitor.py        # HTTP 实时仪表盘
 └── utils/             # 数学工具、信号处理
     ├── math_utils.py        # 伪逆、反对称矩阵、角度归一化
     └── signal_processing.py # 一阶 IIR 低通滤波器
@@ -255,10 +290,10 @@ mypy src/
 
 | 阶段 | 内容 | 状态 |
 |------|------|------|
-| Phase 1 | 核心框架 + GMO + MuJoCo/IsaacGym 仿真 | **进行中** |
-| Phase 2 | YAM 硬件适配 + 阻抗/导纳控制 + 碰撞检测 | 规划中 |
-| Phase 3 | UR 适配器 + Pinocchio 后端 + EKF 观测器 | 规划中 |
-| Phase 4 | PINN/Transformer 力估计 + 付费功能 | 规划中 |
+| Phase 1 | 核心框架 + GMO + MuJoCo/IsaacGym 仿真 | ✅ 已完成 |
+| Phase 2 | YAM 硬件适配 + 阻抗/导纳控制 + 碰撞检测 | ✅ 已完成 |
+| Phase 3 | UR 适配器 + Pinocchio 后端 + EKF 观测器 | ✅ 已完成 |
+| Phase 4 | PINN/Transformer 力估计 + AutoTuner + Web 监控 | ✅ 已完成 |
 
 ## 商业模式
 
