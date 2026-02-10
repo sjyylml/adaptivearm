@@ -60,7 +60,7 @@ DynamicsModel (Protocol)
 | `dynamics/` | 刚体动力学计算 | `MuJoCoDynamics`, `CoulombViscousFriction` |
 | `estimation/` | 力/力矩观测器 | `MomentumObserver` (GMO), `EKFObserver`, `PINNObserver`, `TransformerObserver`, `CompositeObserver` |
 | `sim/` | 仿真环境封装 | `MuJoCoArmEnv`, `IsaacGymArmEnv`, `VirtualForceSensor` |
-| `adapters/` | RobotInterface 的具体实现 | `SimAdapter`, `IsaacGymAdapter` |
+| `adapters/` | RobotInterface 的具体实现 | `SimAdapter`, `IsaacGymAdapter`, `YAMAdapter`, `URAdapter` |
 | `control/` | 柔顺控制器（Phase 2+） | 阻抗控制、导纳控制 |
 | `identification/` | 参数辨识（Phase 2+） | 负载估计、摩擦辨识 |
 | `tuning/` | 自动参数调优 | `AutoTuner` |
@@ -224,6 +224,9 @@ python examples/10_auto_tuner_demo.py
 
 # 自定义模型加载 demo
 python examples/11_custom_model_demo.py
+
+# YAM 真机硬件测试（需连接 YAM 机械臂）
+python examples/12_yam_hardware_test.py --channel can0
 ```
 
 ## 项目结构
@@ -238,6 +241,7 @@ src/adaptivearm/
 ├── models/            # 机器人模型文件 + 注册表
 │   ├── __init__.py          # RobotModelInfo + register/get/list
 │   ├── default_6dof/        # 内置 6-DOF 臂 (MJCF)
+│   ├── yam/                 # i2rt YAM 6-DOF 臂 (MJCF + meshes)
 │   ├── ur5e/                # UR5e 占位（用户添加 URDF）
 │   └── panda/               # Panda 占位（用户添加 URDF）
 ├── dynamics/          # 动力学计算
@@ -258,7 +262,9 @@ src/adaptivearm/
 │   └── virtual_sensor.py    # 虚拟力传感器（ground truth）
 ├── adapters/          # RobotInterface 实现
 │   ├── sim/           #   MuJoCo SimAdapter
-│   └── isaacgym/      #   Isaac Gym IsaacGymAdapter
+│   ├── isaacgym/      #   Isaac Gym IsaacGymAdapter
+│   ├── yam/           #   i2rt YAM 硬件 YAMAdapter
+│   └── ur/            #   Universal Robots URAdapter
 ├── control/           # 柔顺控制器
 │   ├── impedance.py          # 阻抗控制器
 │   ├── admittance.py         # 导纳控制器

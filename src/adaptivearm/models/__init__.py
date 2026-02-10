@@ -108,6 +108,15 @@ register_model(RobotModelInfo(
     description="Built-in 6-DOF serial manipulator for prototyping",
 ))
 
+register_model(RobotModelInfo(
+    name="yam",
+    model_path=_MODELS_DIR / "yam" / "yam_no_gripper.xml",
+    n_joints=6,
+    ee_site_name="tcp_site",
+    ee_body_name="link_6",
+    description="i2rt YAM 6-DOF arm (DM4340 x3 + DM4310 x3)",
+))
+
 __all__ = [
     "RobotModelInfo",
     "get_model",

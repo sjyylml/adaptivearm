@@ -86,7 +86,7 @@ packages = ["adaptivearm"]
 mypy_path = "src"
 
 [[tool.mypy.overrides]]
-module = ["mujoco.*", "isaacgym.*", "torch.*", "pinocchio.*", "pin.*", "rtde_control.*", "rtde_receive.*", "flask.*", "scipy.*"]
+module = ["mujoco.*", "isaacgym.*", "torch.*", "pinocchio.*", "pin.*", "rtde_control.*", "rtde_receive.*", "flask.*", "scipy.*", "i2rt.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
