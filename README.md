@@ -8,7 +8,7 @@
     <a href="#quick-start">Quick Start</a> ·
     <a href="#architecture">Architecture</a> ·
     <a href="#installation">Installation</a> ·
-    <a href="#-中文说明">中文</a>
+    <a href="#中文说明">中文</a>
   </p>
 </p>
 
