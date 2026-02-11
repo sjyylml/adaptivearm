@@ -1,171 +1,99 @@
 <p align="center">
-  <h1 align="center">🦾 OpenForce</h1>
+  <h1 align="center">OpenForce</h1>
   <p align="center">
-    <strong>Sensorless Force Sensing & Adaptive Control for Robot Arms</strong>
+    <strong>Physics-Aware Sensorless Force Estimation for Robot Arms</strong><br>
+    <em>Bridging VLA models and real-world manipulation — no F/T sensor required.</em>
   </p>
   <p align="center">
-    <a href="#-快速上手">快速上手</a> · <a href="#-核心算法">核心算法</a> · <a href="#-安装">安装</a> · <a href="#-项目结构">项目结构</a>
+    <a href="#quick-start">Quick Start</a> ·
+    <a href="#architecture">Architecture</a> ·
+    <a href="#installation">Installation</a> ·
+    <a href="#-中文说明">中文</a>
   </p>
 </p>
 
 ---
 
-> 💡 让普通协作机械臂（无力矩传感器）具备力估计、负载自适应和主动柔顺能力。
+**OpenForce** is an open-source Python framework that estimates external contact forces on collaborative robot arms using only motor currents and joint encoders. It serves as a **physics execution layer** between high-level AI models (VLA, foundation models) and low-level motor control — translating semantic intent into physically consistent joint torques.
 
-## 🎯 这个项目解决什么问题？
+> **Status**: All algorithms are validated in simulation (MuJoCo). Hardware adapter interfaces exist for YAM and UR robots. Real-robot validation is in progress.
 
-工业协作机械臂（cobot）要实现力控，通常需要加装昂贵的六维力/力矩传感器。**OpenForce** 通过基于模型的软件算法，仅利用电机电流和关节编码器信号，就能估计外部接触力——让一台普通机械臂获得类似力传感器的能力。
+## Why OpenForce?
 
-**核心思路**：机器人运动方程为 `M(q)q̈ + C(q,q̇)q̇ + g(q) = τ_motor + τ_ext`，如果我们精确知道左边的动力学项，就能从电机力矩中反推出外力 `τ_ext`。
-
-## ✨ 特性一览
-
-- 🔬 **多种力估计算法** — GMO 广义动量观测器 · EKF 扩展卡尔曼滤波 · PINN 物理信息神经网络 · Transformer 序列观测器
-- 🤖 **多机械臂支持** — YAM · UR · 自定义 URDF/MJCF，通过模型注册表统一管理
-- 🎮 **双仿真后端** — MuJoCo（CPU 精确仿真）· Isaac Gym（GPU 大规模并行）
-- 🛡️ **安全控制** — 阻抗控制 · 导纳控制 · 自适应阻抗 · 碰撞检测 · 安全监控
-- 🧠 **智能调优** — AutoTuner 自动增益优化 · 负载辨识 · 摩擦辨识
-- 📊 **实时监控** — Web 仪表盘 · Chart.js 可视化 · JSON API
-
-## 🏗️ 系统架构
+The embodied AI stack has a gap: VLA models output high-level actions, but robots need precise, physics-aware torque commands at 200Hz+. Force/torque sensors cost $2k-10k per joint and add integration complexity. OpenForce fills this gap with model-based estimation:
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     🦾 OpenForce 框架                            │
-│                                                                 │
-│  ┌──────────┐    ┌───────────┐    ┌────────────┐    ┌────────┐  │
-│  │  Robot    │───▶│ RobotState│───▶│  Observer   │───▶│Control │  │
-│  │ Interface │    │ q,q̇,τ    │    │ (GMO/EKF)  │    │Output  │  │
-│  └──────────┘    └───────────┘    └────────────┘    └────────┘  │
-│       ▲                                ▲                  │     │
-│       │                                │                  │     │
-│       │                          ┌─────┴──────┐          │     │
-│       │                          │ Dynamics    │          │     │
-│       │                          │ M(q),C,g(q)│          │     │
-│       │                          └────────────┘          │     │
-│       └──────────────────────────────────────────────────┘     │
-└─────────────────────────────────────────────────────────────────┘
+VLA / Foundation Model
+        ↓  (semantic actions)
+   ┌─────────────────────────────┐
+   │        OpenForce            │  ← physics execution layer
+   │  force estimation + control │
+   └─────────────────────────────┘
+        ↓  (joint torques @ 200Hz+)
+   Robot Hardware (any arm)
 ```
 
-### 📡 核心数据流
+**Core equation**: `M(q)q̈ + C(q,q̇)q̇ + g(q) = τ_motor + τ_ext`
+
+If we know the dynamics terms precisely, we can recover external forces `τ_ext` from motor torques alone.
+
+## Features
+
+| Category | What's Included |
+|----------|----------------|
+| **Estimation** | Generalized Momentum Observer (GMO), Extended Kalman Filter, PINN, Transformer observer, composite fusion |
+| **Control** | Impedance, admittance, adaptive impedance, collision detection, safety monitor |
+| **Simulation** | MuJoCo (CPU, precise dynamics), Isaac Gym (GPU, massively parallel) |
+| **Hardware** | Adapter protocol for any robot. Built-in: SimAdapter, YAMAdapter, URAdapter |
+| **Dynamics** | MuJoCo backend, Pinocchio backend (optional) |
+| **Identification** | Payload estimation, friction identification, AutoTuner |
+
+## Architecture
+
+All algorithms interact with robots through the `RobotInterface` protocol — hardware-agnostic by design.
 
 ```
-Robot ──▶ RobotState ──▶ Observer ──▶ ObserverOutput ──▶ Controller ──▶ ControlOutput ──▶ Robot
- (硬件/仿真)  (q, q̇, τ)    (力估计)    (τ_ext, F_ext)     (阻抗/导纳)    (τ_cmd)        (执行)
+Robot → RobotState → Observer → ObserverOutput → Controller → ControlOutput → Robot
+        (q, q̇, τ)    (GMO/EKF)   (τ_ext, F_ext)   (impedance)   (τ_cmd)
 ```
 
-### 🔌 Adapter 模式（硬件解耦）
-
-所有算法通过统一的 `RobotInterface` 协议运行，不直接依赖任何具体机械臂或仿真器：
+### Adapter Pattern
 
 ```
 RobotInterface (Protocol)
-├── SimAdapter        ← 🖥️ MuJoCo 仿真（CPU，精确动力学，开发调试用）
-├── IsaacGymAdapter   ← ⚡ Isaac Gym 仿真（GPU 并行，大规模训练 / sim-to-real）
-├── YAMAdapter        ← 🦾 i2rt YAM 硬件
-└── URAdapter         ← 🏭 Universal Robots 硬件
+├── SimAdapter        — MuJoCo simulation (development & testing)
+├── IsaacGymAdapter   — Isaac Gym (GPU parallel, RL training)
+├── YAMAdapter        — i2rt YAM hardware (CAN bus)
+└── URAdapter         — Universal Robots (RTDE)
 
 DynamicsModel (Protocol)
-├── MuJoCoDynamics    ← MuJoCo 后端（计算 M(q), C(q,q̇), g(q)）
-└── PinocchioDynamics ← Pinocchio 后端（可选）
+├── MuJoCoDynamics    — M(q), C(q,q̇), g(q) via MuJoCo
+└── PinocchioDynamics — via Pinocchio (optional)
 ```
 
-### 📦 模块职责
-
-| 模块 | 职责 | 关键类 |
-|------|------|--------|
-| `core/` | 协议定义、数据类型、配置 | `RobotInterface`, `DynamicsModel`, `RobotState` |
-| `models/` | 机器人模型注册与管理 | `RobotModelInfo`, `get_model()`, `register_model()` |
-| `dynamics/` | 刚体动力学计算 | `MuJoCoDynamics`, `PinocchioDynamics` |
-| `estimation/` | 力/力矩观测器 | `MomentumObserver`, `EKFObserver`, `PINNObserver`, `TransformerObserver` |
-| `sim/` | 仿真环境封装 | `MuJoCoArmEnv`, `IsaacGymArmEnv`, `VirtualForceSensor` |
-| `adapters/` | RobotInterface 实现 | `SimAdapter`, `IsaacGymAdapter`, `YAMAdapter`, `URAdapter` |
-| `control/` | 柔顺控制器 | `ImpedanceController`, `AdmittanceController`, `SafetyMonitor` |
-| `identification/` | 参数辨识 | `PayloadEstimator`, `FrictionIdentifier` |
-| `tuning/` | 自动参数调优 | `AutoTuner` |
-| `monitoring/` | Web 实时监控 | `WebMonitor` |
-
-## 🧮 核心算法
-
-### 广义动量观测器（GMO）
-
-基于 De Luca & Mattone (2005) 的广义动量方法：
-
-```
-p(t) = M(q) · q̇                                    ← 广义动量
-β(t) = ∫[τ_motor + τ_passive - C·q̇ - g(q) + r] dt  ← 积分项
-r(t) = K_O · (p(t) - β(t))                          ← 残差 → 收敛到 τ_ext
-```
-
-**原理**：如果没有外力，`p` 的变化率完全由已知力矩解释；有外力时，`p` 的实际变化会超出预期，残差 `r(t)` 就反映了这个差异。
-
-**实现亮点**：
-- 🎯 **梯形积分**（非欧拉），数值精度更高
-- 🎛️ `K_O` 对角增益矩阵，逐关节可调
-- 📉 可选低通滤波器抑制高频噪声
-- 🔄 Jacobian 伪逆自动转换为笛卡尔力/力矩
-- ⚙️ 自动补偿 MuJoCo 被动阻尼力
-
-## 🎮 双仿真后端
-
-### MuJoCo（默认 — CPU 精确仿真）
-
-- 📦 内置 6-DOF 机械臂模型 + YAM 模型，开箱即用
-- 🎯 精确的接触动力学和刚体动力学
-- 🧪 适合算法开发、单臂调试、单元测试
-- 📏 `VirtualForceSensor` 提供力估计的 ground truth
-
-### Isaac Gym（GPU 并行仿真）
-
-- ⚡ 数千个环境并行运行，适合 RL 训练和大规模参数扫描
-- 🔥 GPU tensor 运算，与 PyTorch 无缝集成
-- 🔄 适合 sim-to-real 迁移、域随机化
-
-## 📥 安装
+## Installation
 
 ```bash
-# 基础安装（MuJoCo 仿真）
-pip install openforce
+# Basic (MuJoCo simulation)
+pip install -e .
 
-# 开发模式
+# Development
 pip install -e ".[dev]"
 
-# 完整安装（含可视化）
+# Full (all optional backends)
 pip install -e ".[all]"
 
-# Isaac Gym 支持（需要先安装 Isaac Gym）
-pip install -e ".[isaacgym]"
-
-# 神经网络观测器（PINN/Transformer，需要 PyTorch）
-pip install -e ".[nn]"
-
-# Web 监控面板
-pip install -e ".[web]"
+# Specific extras
+pip install -e ".[nn]"         # PINN/Transformer (requires PyTorch)
+pip install -e ".[isaacgym]"   # Isaac Gym support
+pip install -e ".[web]"        # Web monitoring dashboard
 ```
 
-**依赖**: Python 3.10+, NumPy, SciPy, MuJoCo 3.0+
+**Requirements**: Python 3.10+, NumPy, SciPy, MuJoCo 3.0+
 
-## 🚀 快速上手
+## Quick Start
 
-### 示例 1：MuJoCo 仿真 + 重力补偿
-
-```python
-import numpy as np
-from openforce.adapters.sim import SimAdapter
-from openforce.dynamics import MuJoCoDynamics
-
-adapter = SimAdapter()  # 内置 6-DOF 机械臂
-dynamics = MuJoCoDynamics(adapter.env.model)
-
-state = adapter.reset(q0=np.array([0.0, 0.5, -0.3, 0.0, 0.2, 0.0]))
-
-for _ in range(1000):
-    state = adapter.get_state()
-    g = dynamics.gravity_vector(state.q)
-    adapter.send_torque(g)  # 纯重力补偿
-```
-
-### 示例 2：GMO 力估计
+### Force Estimation with GMO
 
 ```python
 import numpy as np
@@ -180,8 +108,8 @@ observer = MomentumObserver(
     dynamics=dynamics,
     n_joints=adapter.n_joints,
     dt=adapter.dt,
-    gains=np.full(adapter.n_joints, 30.0),  # 观测器增益
-    lowpass_cutoff=10.0,                      # 10Hz 低通滤波
+    gains=np.full(adapter.n_joints, 30.0),
+    lowpass_cutoff=10.0,
 )
 
 state = adapter.reset()
@@ -190,36 +118,13 @@ observer.reset()
 for _ in range(1000):
     state = adapter.get_state()
     output = observer.update(state)
-
-    # output.tau_ext — 估计的外部关节力矩 (Nm)
-    # output.wrench_ext — 估计的笛卡尔力/力矩 (N, Nm)
-
+    # output.tau_ext  — estimated external joint torques (Nm)
+    # output.wrench_ext — estimated Cartesian wrench (N, Nm)
     g = dynamics.gravity_vector(state.q)
     adapter.send_torque(g)
 ```
 
-### 示例 3：Isaac Gym 并行仿真
-
-```python
-import numpy as np
-from openforce.adapters.isaacgym import IsaacGymAdapter
-
-# 启动 1024 个并行环境
-adapter = IsaacGymAdapter(
-    num_envs=1024,
-    asset_file="urdf/my_arm.urdf",
-)
-
-states = adapter.reset()  # 批量重置
-# states.q.shape = (1024, n_joints)
-
-for _ in range(1000):
-    states = adapter.get_state()
-    tau = compute_control(states)   # 你的控制逻辑
-    adapter.send_torque(tau)         # 批量发送力矩
-```
-
-### 示例 4：YAM 真机力估计
+### Hardware (YAM Example)
 
 ```python
 import numpy as np
@@ -232,128 +137,121 @@ info = get_model("yam")
 dynamics = MuJoCoDynamics.from_xml(info.model_path)
 
 with YAMAdapter() as yam:
-    observer = MomentumObserver(dynamics=dynamics, n_joints=6, dt=0.004, gains=np.full(6, 20.0))
+    observer = MomentumObserver(
+        dynamics=dynamics, n_joints=6, dt=0.004, gains=np.full(6, 20.0)
+    )
     observer.reset()
-
     for _ in range(5000):
         state = yam.get_state()
         output = observer.update(state)
-        print(f"外力估计: {output.tau_ext}")
 ```
 
-## 📋 运行示例脚本
+### Run Examples
 
 ```bash
-# 🖥️ MuJoCo 重力补偿仿真
-python examples/01_quickstart_simulation.py
-
-# 📊 GMO 力估计 demo（估计值 vs 真实值对比）
-python examples/02_momentum_observer_demo.py
-
-# 🧠 PINN 力观测器训练 + 推理
-python examples/08_pinn_observer_demo.py
-
-# 🤖 Transformer 力观测器训练 + 推理
-python examples/09_transformer_observer_demo.py
-
-# 🎛️ 自动增益优化
-python examples/10_auto_tuner_demo.py
-
-# 📦 自定义模型加载
-python examples/11_custom_model_demo.py
-
-# 🦾 YAM 真机硬件测试（需连接 YAM 机械臂）
-python examples/12_yam_hardware_test.py --channel can0
+python examples/01_quickstart_simulation.py    # Gravity compensation
+python examples/02_momentum_observer_demo.py   # GMO estimation vs ground truth
+python examples/03_impedance_control.py        # Impedance control
+python examples/04_collision_detection.py      # Collision detection
+python examples/08_pinn_observer_demo.py       # PINN observer
+python examples/10_auto_tuner_demo.py          # Auto gain tuning
 ```
 
-## 📁 项目结构
+## Core Algorithm: Generalized Momentum Observer
+
+Based on De Luca & Mattone (2005):
+
+```
+p(t) = M(q) · q̇                                     — generalized momentum
+β(t) = ∫[τ_motor + τ_passive - C·q̇ - g(q) + r] dt   — integral term
+r(t) = K_O · (p(t) - β(t))                           — residual → converges to τ_ext
+```
+
+Implementation: trapezoidal integration, per-joint diagonal gain matrix `K_O`, optional low-pass filtering, automatic Jacobian-based Cartesian wrench conversion.
+
+## Project Structure
 
 ```
 src/openforce/
-├── core/              # 🔧 协议定义、数据类型、配置
-│   ├── interfaces.py  #   RobotInterface, DynamicsModel (Protocol)
-│   ├── robot_state.py #   RobotState 数据容器
-│   ├── types.py       #   ObserverOutput, ControlOutput
-│   └── config.py      #   OpenForceConfig
-├── models/            # 📦 机器人模型文件 + 注册表
-│   ├── __init__.py          # RobotModelInfo + register/get/list
-│   ├── default_6dof/        # 内置 6-DOF 臂 (MJCF)
-│   ├── yam/                 # i2rt YAM 6-DOF 臂 (MJCF + meshes)
-│   ├── ur5e/                # UR5e（用户添加 URDF）
-│   └── panda/               # Panda（用户添加 URDF）
-├── dynamics/          # ⚙️ 动力学计算
-│   ├── mujoco_dynamics.py   # MuJoCo 后端: M(q), C(q,q̇), g(q)
-│   └── friction_models.py   # Coulomb + 粘性摩擦模型
-├── estimation/        # 🔬 力估计算法
-│   ├── momentum_observer.py      # GMO 广义动量观测器
-│   ├── ekf_observer.py           # EKF 扩展卡尔曼滤波
-│   ├── pinn_observer.py          # PINN 物理信息神经网络
-│   ├── transformer_observer.py   # Transformer 序列观测器
-│   ├── composite_observer.py     # 多观测器融合
-│   └── collision_detector.py     # 碰撞检测器
-├── sim/               # 🎮 仿真环境
-│   ├── mujoco_env.py        # MuJoCo 环境
-│   ├── isaacgym_env.py      # Isaac Gym GPU 并行环境
-│   └── virtual_sensor.py    # 虚拟力传感器（ground truth）
-├── adapters/          # 🔌 RobotInterface 实现
-│   ├── sim/           #   MuJoCo SimAdapter
-│   ├── isaacgym/      #   Isaac Gym IsaacGymAdapter
-│   ├── yam/           #   i2rt YAM YAMAdapter
-│   └── ur/            #   Universal Robots URAdapter
-├── control/           # 🛡️ 柔顺控制器
-│   ├── impedance.py          # 阻抗控制器
-│   ├── admittance.py         # 导纳控制器
-│   ├── adaptive_impedance.py # 自适应阻抗控制器
-│   └── safety_monitor.py     # 安全监控
-├── identification/    # 🔍 参数辨识
-│   ├── payload_estimator.py  # 负载估计
-│   └── friction_identifier.py # 摩擦辨识
-├── tuning/            # 🎛️ 自动调优
-│   └── auto_tuner.py         # 自动增益优化
-├── monitoring/        # 📊 Web 监控
-│   └── web_monitor.py        # HTTP 实时仪表盘
-└── utils/             # 🧰 数学工具、信号处理
-    ├── math_utils.py        # 伪逆、反对称矩阵、角度归一化
-    └── signal_processing.py # 一阶 IIR 低通滤波器
-tests/                 # ✅ 119 个单元测试 + 集成测试
-examples/              # 📋 示例脚本
+├── core/           — Protocol definitions, data types (RobotInterface, RobotState)
+├── models/         — Robot model registry (MJCF/URDF, built-in: 6-DOF, YAM)
+├── dynamics/       — Rigid-body dynamics (MuJoCoDynamics, PinocchioDynamics)
+├── estimation/     — Force observers (GMO, EKF, PINN, Transformer, composite)
+├── sim/            — Simulation environments (MuJoCo, Isaac Gym)
+├── adapters/       — RobotInterface implementations (Sim, IsaacGym, YAM, UR)
+├── control/        — Compliant controllers (impedance, admittance, safety)
+├── identification/ — Parameter identification (payload, friction)
+├── tuning/         — AutoTuner (gain optimization)
+├── monitoring/     — Web dashboard (real-time visualization)
+└── utils/          — Math helpers, signal processing
+tests/              — Unit & integration tests
+examples/           — Example scripts (01-12)
 ```
 
-## 🛠️ 开发
+## Roadmap
+
+| Phase | Content | Status |
+|-------|---------|--------|
+| Phase 1 | Core framework + GMO + MuJoCo simulation | Done (sim validated) |
+| Phase 2 | Compliant control + collision detection | Done (sim validated) |
+| Phase 3 | UR/YAM adapters + Pinocchio + EKF | Done (sim validated) |
+| Phase 4 | PINN/Transformer + AutoTuner + Web monitor | Done (sim validated) |
+| Phase 5 | Real-robot validation + sim-to-real | In progress |
+| Phase 6 | Cross-hardware identification database | Planned |
+
+## Development
 
 ```bash
-# 安装开发依赖
 pip install -e ".[dev]"
-
-# 运行测试
-pytest tests/
-
-# 代码检查
-ruff check src/
-
-# 类型检查
-mypy src/
+pytest tests/           # Run tests
+ruff check src/         # Lint
+mypy src/               # Type check
 ```
 
-## 🗺️ 路线图
+## Contributing
 
-| 阶段 | 内容 | 状态 |
-|------|------|------|
-| Phase 1 | 核心框架 + GMO + MuJoCo/IsaacGym 仿真 | ✅ 完成 |
-| Phase 2 | YAM 硬件适配 + 阻抗/导纳控制 + 碰撞检测 | ✅ 完成 |
-| Phase 3 | UR 适配器 + Pinocchio 后端 + EKF 观测器 | ✅ 完成 |
-| Phase 4 | PINN/Transformer 力估计 + AutoTuner + Web 监控 | ✅ 完成 |
-| Phase 5 | 真机验证 + sim-to-real + 多臂协同 | 🚧 进行中 |
+We welcome contributions — especially hardware adapters for new robot arms and real-robot validation data. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-## 💼 商业模式
+## License
 
-| 🆓 免费开源 (MIT) | 💰 付费服务 |
-|-------------------|------------|
-| 全部算法代码 | AutoTuner 自动增益调优 |
-| 全部适配器（仿真 + 硬件） | 系统辨识向导 |
-| 仿真环境 + 文档 + 示例 | Web 实时监控面板 |
-| | 定制适配器开发 + 技术支持 |
+MIT — free to use, modify, and distribute.
 
-## 📄 License
+---
 
-MIT — 自由使用、修改、分发。
+# 中文说明
+
+**OpenForce** 是一个开源的无传感器力估计与自适应控制框架，适用于协作机械臂。仅利用电机电流和关节编码器信号即可估计外部接触力，无需力/力矩传感器。
+
+### 定位
+
+OpenForce 作为**物理执行层**，向上对接 VLA / 大模型的语义指令，向下屏蔽异构硬件差异，输出物理一致的关节力矩。
+
+### 核心能力
+
+- **力估计算法**: GMO 广义动量观测器、EKF 扩展卡尔曼滤波、PINN 物理信息神经网络、Transformer 序列观测器
+- **柔顺控制**: 阻抗控制、导纳控制、自适应阻抗、碰撞检测
+- **仿真后端**: MuJoCo（CPU 精确仿真）、Isaac Gym（GPU 大规模并行）
+- **硬件适配**: 通过 `RobotInterface` 协议支持任意机械臂，内置 YAM、UR 适配器
+- **参数辨识**: 负载估计、摩擦辨识、AutoTuner 自动增益优化
+
+### 当前状态
+
+所有算法均在 MuJoCo 仿真环境中验证通过。硬件适配器接口已实现（YAM、UR），真机验证正在进行中。
+
+### 快速上手
+
+```bash
+pip install -e ".[dev]"
+python examples/01_quickstart_simulation.py
+python examples/02_momentum_observer_demo.py
+```
+
+详细使用方法请参考上方英文文档中的 [Quick Start](#quick-start) 部分。
+
+### 商业模式
+
+| 开源 (MIT) | 付费服务 |
+|-----------|---------|
+| 全部算法与适配器代码 | 定制硬件适配与参数调优 |
+| 仿真环境 + 示例 + 文档 | 跨硬件系统辨识数据库 |
+| 社区支持 | 具身数据预处理工具链 |
